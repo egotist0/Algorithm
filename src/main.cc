@@ -4,6 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <limits>
+#include <map>
 #include <numeric>
 #include <queue>
 #include <set>
@@ -17,43 +18,28 @@
 using namespace std;
 
 class Solution {
- private:
-  int n;
-  vector<vector<string>> res;
-  void dfs(int u, vector<string>& g, vector<bool>& col, vector<bool>& djx,
-           vector<bool>& fdjx) {
-    if (u == n) {
-      res.emplace_back(g);
-      return;
-    }
+ public:
+  int networkDelayTime(vector<vector<int>>& times, int n, int k) {
+    vector<vector<pair<int, int>>> graph(n, vector<pair<int, int>>());
+    for (const auto& t : times) graph[t[0] - 1].emplace_back({t[1] - 1, t[2]});
+    vector<int> dis(n, 6001);
+    vector<bool> vis(n, false);
+    dis[k] = 0;
     for (int i = 0; i < n; i++) {
-      if (!col[i] && !djx[u + i] && !fdjx[n - u + i]) {
-        g[u][i] = 'Q';
-        col[i] = djx[u + i] = fdjx[n - u + i] = true;
-        dfs(u + 1, g, col, djx, fdjx);
-        col[i] = djx[u + i] = fdjx[n - u + i] = false;
-        g[u][i] = '.';
+      int u = -1, MIN = 6001;
+      for (int j = 0; j < n; j++) {
+        if (!vis[j] && dis[j] < MIN) {
+          u = j;
+          MIN = dis[j];
+        }
+      }
+      if (u == -1) break;
+      vis[u] = true;
+      for (const auto& node : graph[u]) {
+        if (vis[node.first] == false)
+          dis[node.first] = min(dis[node.first], dis[u] + node.second);
       }
     }
-  }
-
- public:
-  vector<vector<string>> solveNQueens(int n) {
-    this->n = n;
-    int N = 20;
-    vector<string> g(n, string(n, '.'));
-    vector<bool> col(N), djx(N), fdjx(N);
-
-    dfs(0, g, col, djx, fdjx);
-    return res;
+    return *max_element(dis.begin(), dis.end());
   }
 };
-
-int main() {
-  Solution tmp;
-  vector<int> v1{1, 2, 3, 4, 5};
-  vector<int> v2{3, 4, 5, 1, 2};
-  int res = tmp.canCompleteCircuit(v1, v2);
-  cout << res << "1" << endl;
-  return 0;
-}

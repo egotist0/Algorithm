@@ -3,6 +3,8 @@
 This is my own experience with some algorithms, mainly including common data structures and algorithms
 https://zhuanlan.zhihu.com/p/349940945?utm_medium=social&utm_oi=51534712799232
 
+[toc]
+
 
 
 
@@ -796,7 +798,7 @@ https://zhuanlan.zhihu.com/p/349940945?utm_medium=social&utm_oi=51534712799232
 
   - [ ] Leetcode 1087 Brace Expansion
 
-  - [ ] Leetcode 399 Evaluate Division
+  - [x] Leetcode 399 Evaluate Division
 
   - [ ] Leetcode 1274 Number of Ships in a Rectangle
 
@@ -890,6 +892,7 @@ https://zhuanlan.zhihu.com/p/349940945?utm_medium=social&utm_oi=51534712799232
   - [ ] Leetcode 547 Number of Provinces
   - [ ] Leetcode 737 Sentence Similarity II
   - [ ] Leetcode 305 Number of Islands II
+  - [x] Leetcode 684 Redundant Connection
 
 
 
