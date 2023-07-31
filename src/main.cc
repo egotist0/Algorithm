@@ -1,8 +1,10 @@
 #include <algorithm>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <limits>
 #include <map>
 #include <numeric>
@@ -19,27 +21,38 @@ using namespace std;
 
 class Solution {
  public:
-  int networkDelayTime(vector<vector<int>>& times, int n, int k) {
-    vector<vector<pair<int, int>>> graph(n, vector<pair<int, int>>());
-    for (const auto& t : times) graph[t[0] - 1].emplace_back({t[1] - 1, t[2]});
-    vector<int> dis(n, 6001);
-    vector<bool> vis(n, false);
-    dis[k] = 0;
+  int minCostConnectPoints(vector<vector<int>>& points) {
+    const int n = points.size();
+    int res = 0;
+    vector<int> dis(n, INT_MAX);
+    vector<vector<int>> graph(n, vector<int>(n));
     for (int i = 0; i < n; i++) {
-      int u = -1, MIN = 6001;
-      for (int j = 0; j < n; j++) {
-        if (!vis[j] && dis[j] < MIN) {
-          u = j;
-          MIN = dis[j];
+      for (int j = 0; j < n; j++)
+        graph[i][j] =
+            abs(points[i][0] - points[j][0]) + abs(points[i][1] - points[j][1]);
+    }
+    priority_queue<int, vector<int>, greater<>> minHeap;
+    minHeap.emplace(0);
+    dis[0] = 0;
+    while (!minHeap.empty()) {
+      const auto index = minHeap.top();
+      minHeap.pop();
+      res += dis[index];
+      for (int i = 0; i < n; i++) {
+        if (graph[index][i] < dis[i]) {
+          dis[i] = graph[index][i];
+          minHeap.emplace(i);
         }
       }
-      if (u == -1) break;
-      vis[u] = true;
-      for (const auto& node : graph[u]) {
-        if (vis[node.first] == false)
-          dis[node.first] = min(dis[node.first], dis[u] + node.second);
-      }
     }
-    return *max_element(dis.begin(), dis.end());
+    return res;
   }
 };
+
+int main() {
+  vector<vector<int>> points = {{3, 12}, {-2, 5}, {-4, 1}};
+  Solution s;
+  int res = s.minCostConnectPoints(points);
+  cout << res << endl;
+  return 0;
+}
