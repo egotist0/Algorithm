@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <climits>
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
@@ -19,40 +20,57 @@
 #include <vector>
 using namespace std;
 
-class Solution {
+class Trie {
+ private:
+  struct Node {
+    vector<Node*> children;
+    bool isWord;
+    Node() : children(26, nullptr), isWord(false) {}
+    ~Node() {
+      for (auto& child : children) delete child;
+    }
+  };
+
+  Node* root;
+
  public:
-  int minCostConnectPoints(vector<vector<int>>& points) {
-    const int n = points.size();
-    int res = 0;
-    vector<int> dis(n, INT_MAX);
-    vector<vector<int>> graph(n, vector<int>(n));
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++)
-        graph[i][j] =
-            abs(points[i][0] - points[j][0]) + abs(points[i][1] - points[j][1]);
+  Trie() { this->root = new Node(); }
+
+  void insert(string word) {
+    Node* p = root;
+    for (const auto& c : word) {
+      int i = c - 'a';
+      if (!p->children[i]) p->children[i] = new Node();
+      p = p->children[i];
     }
-    priority_queue<int, vector<int>, greater<>> minHeap;
-    minHeap.emplace(0);
-    dis[0] = 0;
-    while (!minHeap.empty()) {
-      const auto index = minHeap.top();
-      minHeap.pop();
-      res += dis[index];
-      for (int i = 0; i < n; i++) {
-        if (graph[index][i] < dis[i]) {
-          dis[i] = graph[index][i];
-          minHeap.emplace(i);
-        }
-      }
+    p->isWord = true;
+  }
+
+  bool search(string word) {
+    Node* p = root;
+    for (const auto& c : word) {
+      int i = c - 'a';
+      if (!p->children[i]) return false;
+      p = p->children[i];
     }
-    return res;
+    return p->isWord;
+  }
+
+  bool startsWith(string prefix) {
+    Node* p = root;
+    for (const auto& c : prefix) {
+      int i = c - 'a';
+      if (!p->children[i]) return false;
+      p = p->children[i];
+    }
+    return true;
   }
 };
 
-int main() {
-  vector<vector<int>> points = {{3, 12}, {-2, 5}, {-4, 1}};
-  Solution s;
-  int res = s.minCostConnectPoints(points);
-  cout << res << endl;
-  return 0;
-}
+// int main() {
+//   vector<vector<int>> points = {{3, 12}, {-2, 5}, {-4, 1}};
+//   Solution s;
+//   int res = s.minCostConnectPoints(points);
+//   cout << res << endl;
+//   return 0;
+// }
